@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos{% endblock %}
+
+{% block customCSS %}
+    <link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Productos</h6>
+        <button class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#modalProducto" id="btnNuevoProducto">
+            <i class="fas fa-plus"></i> Crear Producto
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="tabla-productos" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.codigo }}</td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td>{{ producto.precio }}</td>
+                        <td>{{ producto.stock }}</td>
+                        <td>
+                            <span class="badge {% if producto.activo == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if producto.activo == 1 else 'Inactivo' }}</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary btn-editar-producto"
+                                data-id="{{ producto.id }}"
+                                data-codigo="{{ producto.codigo }}"
+                                data-nombre="{{ producto.nombre }}"
+                                data-descripcion="{{ producto.descripcion }}"
+                                data-precio="{{ producto.precio }}"
+                                data-stock="{{ producto.stock }}"
+                                data-toggle="modal" data-target="#modalProducto">
+                                Editar
+                            </button>
+                            <form method="POST" action="{{ url_for('productos.inactivar_producto', id=producto.id) }}" class="d-inline" id="formInactivarProducto{{ producto.id }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-producto" data-id="{{ producto.id }}">Inactivar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal para crear/editar producto -->
+<div class="modal fade" id="modalProducto" tabindex="-1" role="dialog" aria-labelledby="modalProductoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="formProducto" method="POST" action="{{ url_for('productos.crear_producto') }}">
+                <input type="hidden" name="id" id="producto_id">
+                {{ form.csrf_token }}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoLabel">Crear Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="codigo">Código</label>
+                        <input type="text" class="form-control" name="codigo" id="codigo" required maxlength="20" pattern="[A-Za-z0-9]+">
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" class="form-control" name="nombre" id="nombre" required maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea class="form-control" name="descripcion" id="descripcion" maxlength="255"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="precio">Precio</label>
+                        <input type="number" class="form-control" name="precio" id="precio" required min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" class="form-control" name="stock" id="stock" required min="0" step="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnGuardarProducto">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block customJS %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#tabla-productos').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            language: {
+                url: "{{ url_for('static', filename='vendor/datatables/es.json') }}"
+            }
+        });
+
+        // Limpiar modal al crear nuevo producto
+        $('#btnNuevoProducto').on('click', function() {
+            $('#modalProductoLabel').text('Crear Producto');
+            $('#formProducto').attr('action', "{{ url_for('productos.crear_producto') }}");
+            $('#producto_id').val('');
+            $('#codigo').val('');
+            $('#nombre').val('');
+            $('#descripcion').val('');
+            $('#precio').val('');
+            $('#stock').val('');
+        });
+
+        // Cargar datos en el modal al editar
+        $('.btn-editar-producto').on('click', function() {
+            $('#modalProductoLabel').text('Editar Producto');
+            $('#formProducto').attr('action', "{{ url_for('productos.actualizar_producto') }}");
+            $('#producto_id').val($(this).data('id'));
+            $('#codigo').val($(this).data('codigo'));
+            $('#nombre').val($(this).data('nombre'));
+            $('#descripcion').val($(this).data('descripcion'));
+            $('#precio').val($(this).data('precio'));
+            $('#stock').val($(this).data('stock'));
+        });
+
+        // SweetAlert2 para inactivar producto
+        $('.btn-inactivar-producto').on('click', function() {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: 'El producto será inactivado y no podrá operar.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, inactivar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#formInactivarProducto' + id).submit();
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}
