@@ -15,6 +15,14 @@
     <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
 
+    <!-- Select2 CSS -->
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <!-- Select2 Bootstrap 5 CSS (asegura que el theme se cargue después de select2) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
 </head>
 
 <body id="page-top">
@@ -86,13 +94,13 @@
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
                     <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
+                    <span>Procesos</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
+                        <h6 class="collapse-header">Módulos:</h6>
+                        <a class="collapse-item" href="{{ url_for('ordenes_compra.listar_ordenes')}}">Orden Compra</a>
                         <a class="collapse-item" href="utilities-border.html">Borders</a>
                         <a class="collapse-item" href="utilities-animation.html">Animations</a>
                         <a class="collapse-item" href="utilities-other.html">Other</a>
@@ -318,8 +326,19 @@
 
         <!-- Page level plugins -->
         <script src="{{url_for('static', filename ='vendor/chart.js/Chart.min.js')}}"></script>
+        <script src="assets/plugins/global/plugins.bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
         {% block customJS %}
+        <script>
+        $(document).ready(function() {
+            // Inicializa select2 en todos los selects con data-control="select2"
+            $('select[data-control="select2"]').select2({
+                // ¡Esta es la configuración clave!
+                theme: "bootstrap-5"
+            });
+        });
+        </script>
         {% endblock %}
 </body>
 

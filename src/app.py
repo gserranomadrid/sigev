@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_mysqldb import MySQL
+from db import db
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import CSRFProtect
 from config import config
@@ -7,6 +7,7 @@ from config import config
 from routes.clientes import clientes_bp
 from routes.proveedores import proveedores_bp
 from routes.productos import productos_bp
+from routes.ordenes_compra import ordenes_compra_bp
 
 #Modelos
 from models.ModelUsuario import ModelUsuario
@@ -17,8 +18,7 @@ from models.entities.Usuario import Usuario
 # La ruta a las carpetas puede necesitar ajuste si app.py está dentro de src/
 # Si app.py está en src/, las rutas relativas son correctas.
 app = Flask(__name__, template_folder='templates', static_folder='static')
-
-db = MySQL(app)
+db.init_app(app)
 login_manager_app = LoginManager()
 login_manager_app.init_app(app)
 csrf = CSRFProtect(app)
@@ -68,6 +68,7 @@ if __name__ == '__main__':
     app.register_blueprint(clientes_bp)
     app.register_blueprint(proveedores_bp)
     app.register_blueprint(productos_bp)
+    app.register_blueprint(ordenes_compra_bp)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
     app.run(debug=True)

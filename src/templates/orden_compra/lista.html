@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Listado de Órdenes de Compra{% endblock %}
+{% block breadcrumb %}Órdenes de Compra{% endblock %}
+{% block breadcrumbInicio %}Inicio{% endblock %}
+{% block customCSS %}
+    <link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">Listado de Órdenes de Compra</h6>
+        <a href="{{ url_for('ordenes_compra.index') }}" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i> Crear Orden
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle" id="tabla-ordenes" width="100%">
+                <thead class="table-light border border-secondary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Proveedor</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Productos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for orden in ordenes %}
+                    <tr>
+                        <td>{{ orden.id }}</td>
+                        <td>{{ orden.proveedor_nombre }}</td>
+                        <td>{{ orden.fecha }}</td>
+                        <td>{{ 'Activo' if orden.activo == 1 else 'Inactivo' }}</td>
+                        <td>
+                            <ul>
+                            {% for det in orden.detalles %}
+                                <li>{{ det.producto_nombre }} ({{ det.cantidad }}) - ${{ det.precio_unitario }}</li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- DataTables JS & CSS -->
+{% block customJS %}
+<script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#tabla-ordenes').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true,
+            language: {
+                url: "{{ url_for('static', filename='vendor/datatables/es.json') }}"
+            }
+        });
+    });
+</script>
+{% endblock %}

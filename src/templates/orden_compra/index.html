@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Órdenes de Compra{% endblock %}
+{% block breadcrumb %}Órdenes de Compra{% endblock %}
+{% block breadcrumbInicio %}Inicio{% endblock %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Órdenes de Compra</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST" id="ordenCompraForm">
+            {{ form.hidden_tag() }}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.proveedor_rif.label }}
+                    {{ form.proveedor_rif(class="form-control select2 w-100", data_control="select2") }}
+                </div>
+                <div class="col-md-6">
+                    <label for="fecha" class="form-label">Fecha</label>
+                    <input type="date" class="form-control" name="fecha" id="fecha" value="{{ form.fecha.data or fecha_actual }}" required>
+                </div>
+            </div>
+            <table class="table table-bordered align-middle" id="tabla-detalles" width="100%">
+                <thead class="table-light border border-secondary">
+                    <tr>
+                        <th style="width:40%">Producto</th>
+                        <th style="width:20%">Cantidad</th>
+                        <th style="width:20%">Precio Unitario</th>
+                        <th style="width:20%">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for detalle in form.detalles %}
+                    <tr class="detalle-row">
+                        <td>
+                            {{ detalle.producto_codigo(class="form-select select2 w-100", data_control="select2") }}
+                        </td>
+                        <td>
+                            {{ detalle.cantidad(class="form-control w-100") }}
+                        </td>
+                        <td>
+                            {{ detalle.precio_unitario(class="form-control w-100") }}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm remove-detalle"><i class="bi bi-trash"></i> Eliminar</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" id="addDetalle">Añadir producto</button>
+            <button type="submit" class="btn btn-primary">Guardar Orden</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function renumerarDetalles() {
+        const rows = document.querySelectorAll('#tabla-detalles tbody .detalle-row');
+        rows.forEach((row, idx) => {
+            // Producto
+            let prod = row.querySelector('select[name^="detalles-"]');
+            if (prod) {
+                prod.name = `detalles-${idx}-producto_codigo`;
+                prod.id = `detalles-${idx}-producto_codigo`;
+            }
+            // Cantidad
+            let cant = row.querySelector('input[name^="detalles-"][name$="cantidad"]');
+            if (cant) {
+                cant.name = `detalles-${idx}-cantidad`;
+                cant.id = `detalles-${idx}-cantidad`;
+            }
+            // Precio unitario
+            let precio = row.querySelector('input[name^="detalles-"][name$="precio_unitario"]');
+            if (precio) {
+                precio.name = `detalles-${idx}-precio_unitario`;
+                precio.id = `detalles-${idx}-precio_unitario`;
+            }
+        });
+    }
+    document.getElementById('addDetalle').onclick = function() {
+        let tabla = document.getElementById('tabla-detalles');
+        let tbody = tabla.querySelector('tbody');
+        let rows = tbody.getElementsByClassName('detalle-row');
+        if (rows.length > 0) {
+            let clone = rows[0].cloneNode(true);
+            // Limpia los valores
+            clone.querySelectorAll('input, select').forEach(e => e.value = '');
+            // Elimina el select2-container si existe
+            $(clone).find('.select2-container').remove();
+            // Reemplaza el select por uno nuevo sin select2
+            let select = clone.querySelector('select.select2');
+            if (select) {
+                let newSelect = select.cloneNode(true);
+                newSelect.value = '';
+                select.parentNode.replaceChild(newSelect, select);
+                $(newSelect).select2({theme: 'bootstrap-5'});
+            }
+            tbody.appendChild(clone);
+            renumerarDetalles();
+        }
+    };
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-detalle')) {
+            let row = e.target.closest('.detalle-row');
+            if (row) row.remove();
+            renumerarDetalles();
+        }
+    });
+    // Modal detalles
+    document.getElementById('addModalDetalle').onclick = function() {
+        let detalles = document.getElementById('modal_detalles');
+        let rows = detalles.getElementsByClassName('modal-detalle-row');
+        if (rows.length > 0) {
+            let clone = rows[0].cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(e => e.value = '');
+            detalles.appendChild(clone);
+            $(clone).find('.select2').select2({theme: 'bootstrap4'});
+        }
+    };
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-modal-detalle')) {
+            let row = e.target.closest('.modal-detalle-row');
+            if (row) row.remove();
+        }
+    });
+    $(document).ready(function() {
+        $('select.select2').select2({theme: 'bootstrap-5'});
+    });
+</script>
+{% endblock %}
