@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, render_template, current_app, flash, redirect, url_for
-from forms.cliente_form import ClienteForm
+from ..forms.cliente_form import ClienteForm
 from flask_login import login_required  # <-- 1. IMPORTAMOS login_required
-from models.ModelCliente import ModelCliente
+from ..models.ModelCliente import ModelCliente
 ## No importar db ni crear un nuevo MySQL
 
 # El Blueprint se define igual
@@ -12,7 +12,7 @@ clientes_bp = Blueprint('clientes', __name__, url_prefix='/clientes')
 @clientes_bp.route('/', methods=['GET'])
 @login_required  # <-- RUTA PROTEGIDA
 def listar_clientes():
-    from app import db
+    from ..db import db
     from flask_wtf.csrf import generate_csrf
     clientes = ModelCliente.get_all(db)
     form = ClienteForm()
@@ -23,7 +23,7 @@ def listar_clientes():
 @clientes_bp.route('/crear', methods=['POST'])
 @login_required
 def crear_cliente():
-    from app import db
+    from ..db import db
     documento = request.form['documento']
     tipo_documento = request.form['tipo_documento']
     razon_social = request.form['razon_social']
@@ -41,7 +41,7 @@ def crear_cliente():
 @clientes_bp.route('/actualizar', methods=['POST'])
 @login_required
 def actualizar_cliente():
-    from app import db
+    from ..db import db
     id = request.form['id']
     documento = request.form['documento']
     tipo_documento = request.form['tipo_documento']
@@ -60,7 +60,7 @@ def actualizar_cliente():
 @clientes_bp.route('/inactivar/<int:id>', methods=['POST'])
 @login_required
 def inactivar_cliente(id):
-    from app import db
+    from ..db import db
     resultado = ModelCliente.inactivate(db, id)
     if resultado == 'ok':
         flash('Cliente inactivado correctamente.', 'success')

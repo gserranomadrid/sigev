@@ -1,14 +1,14 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from flask_login import login_required
-from forms.producto_form import ProductoForm
-from models.ModelProducto import ModelProducto
+from ..forms.producto_form import ProductoForm
+from ..models.ModelProducto import ModelProducto
 
 productos_bp = Blueprint('productos', __name__, url_prefix='/productos')
 
 @productos_bp.route('/', methods=['GET'])
 @login_required
 def listar_productos():
-    from app import db
+    from ..db import db
     from flask_wtf.csrf import generate_csrf
     productos = ModelProducto.get_all(db)
     form = ProductoForm()
@@ -18,7 +18,7 @@ def listar_productos():
 @productos_bp.route('/crear', methods=['POST'])
 @login_required
 def crear_producto():
-    from app import db
+    from ..db import db
     codigo = request.form['codigo']
     nombre = request.form['nombre']
     descripcion = request.form['descripcion']
@@ -36,7 +36,7 @@ def crear_producto():
 @productos_bp.route('/actualizar', methods=['POST'])
 @login_required
 def actualizar_producto():
-    from app import db
+    from ..db import db
     id = request.form['id']
     codigo = request.form['codigo']
     nombre = request.form['nombre']
@@ -55,7 +55,7 @@ def actualizar_producto():
 @productos_bp.route('/inactivar/<int:id>', methods=['POST'])
 @login_required
 def inactivar_producto(id):
-    from app import db
+    from ..db import db
     resultado = ModelProducto.inactivate(db, id)
     if resultado == 'ok':
         flash('Producto inactivado correctamente.', 'success')

@@ -1,4 +1,4 @@
-from models.entities.Producto import Producto
+from .entities.Producto import Producto
 class ModelProducto():
     @classmethod
     def get_all(self, db):

@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
-from src.forms.orden_compra_form import OrdenCompraForm
-from src.models.ModelOrdenCompra import ModelOrdenCompra
-from db import db
+from ..forms.orden_compra_form import OrdenCompraForm
+from ..models.ModelOrdenCompra import ModelOrdenCompra
+from ..db import db
 from datetime import datetime
 
 ordenes_compra_bp = Blueprint('ordenes_compra', __name__)

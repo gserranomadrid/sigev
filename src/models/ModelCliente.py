@@ -1,4 +1,4 @@
-from models.entities.Cliente import Cliente
+from .entities.Cliente import Cliente
 class ModelCliente():
     @classmethod
     def get_all(self, db):

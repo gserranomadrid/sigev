@@ -1,4 +1,4 @@
-from models.entities.Usuario import Usuario
+from .entities.Usuario import Usuario
 
 class ModelUsuario():
     @classmethod

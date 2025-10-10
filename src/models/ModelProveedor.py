@@ -1,4 +1,4 @@
-from models.entities.Proveedor import Proveedor
+from .entities.Proveedor import Proveedor
 class ModelProveedor():
     @classmethod
     def get_all(self, db):

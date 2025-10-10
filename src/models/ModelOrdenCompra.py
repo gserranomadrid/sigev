@@ -1,5 +1,5 @@
-from src.entities.OrdenCompra import OrdenCompra, DetalleCompra
-from db import db
+from ..entities.OrdenCompra import OrdenCompra, DetalleCompra
+from ..db import db
 
 class ModelOrdenCompra:
     @staticmethod

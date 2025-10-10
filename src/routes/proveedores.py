@@ -1,14 +1,14 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from flask_login import login_required
-from forms.proveedor_form import ProveedorForm
-from models.ModelProveedor import ModelProveedor
+from ..forms.proveedor_form import ProveedorForm
+from ..models.ModelProveedor import ModelProveedor
 
 proveedores_bp = Blueprint('proveedores', __name__, url_prefix='/proveedores')
 
 @proveedores_bp.route('/', methods=['GET'])
 @login_required
 def listar_proveedores():
-    from app import db
+    from ..db import db
     from flask_wtf.csrf import generate_csrf
     proveedores = ModelProveedor.get_all(db)
     form = ProveedorForm()
@@ -18,7 +18,7 @@ def listar_proveedores():
 @proveedores_bp.route('/crear', methods=['POST'])
 @login_required
 def crear_proveedor():
-    from app import db
+    from ..db import db
     rif = request.form['rif']
     razon_social = request.form['razon_social']
     telefono = request.form['telefono']
@@ -35,7 +35,7 @@ def crear_proveedor():
 @proveedores_bp.route('/actualizar', methods=['POST'])
 @login_required
 def actualizar_proveedor():
-    from app import db
+    from ..db import db
     id = request.form['id']
     rif = request.form['rif']
     razon_social = request.form['razon_social']
@@ -53,7 +53,7 @@ def actualizar_proveedor():
 @proveedores_bp.route('/inactivar/<int:id>', methods=['POST'])
 @login_required
 def inactivar_proveedor(id):
-    from app import db
+    from ..db import db
     resultado = ModelProveedor.inactivate(db, id)
     if resultado == 'ok':
         flash('Proveedor inactivado correctamente.', 'success')

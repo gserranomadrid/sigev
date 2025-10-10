@@ -1,19 +1,19 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from db import db
+from .db import db
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import CSRFProtect
-from config import config
+from .config import config
 
-from routes.clientes import clientes_bp
-from routes.proveedores import proveedores_bp
-from routes.productos import productos_bp
-from routes.ordenes_compra import ordenes_compra_bp
+from .routes.clientes import clientes_bp
+from .routes.proveedores import proveedores_bp
+from .routes.productos import productos_bp
+from .routes.ordenes_compra import ordenes_compra_bp
 
 #Modelos
-from models.ModelUsuario import ModelUsuario
+from .models.ModelUsuario import ModelUsuario
 
 #Entidades
-from models.entities.Usuario import Usuario
+from .models.entities.Usuario import Usuario
 
 # La ruta a las carpetas puede necesitar ajuste si app.py está dentro de src/
 # Si app.py está en src/, las rutas relativas son correctas.
