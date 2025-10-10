@@ -3,10 +3,10 @@ from flask_login import UserMixin
 
 class Usuario(UserMixin):
     def __init__(self, id, username, password, nombre=''):
-        self.id = id
-        self.username = username
-        self.password = password
-        self.nombre = nombre
+        self.__id = id
+        self.__username = username
+        self.__password = password
+        self.__nombre = nombre
 
     @classmethod 
     def check_password(self, hashed_password, password):
