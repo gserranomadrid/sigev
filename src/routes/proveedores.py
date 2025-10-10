@@ -23,7 +23,9 @@ def crear_proveedor():
     razon_social = request.form['razon_social']
     telefono = request.form['telefono']
     email = request.form['email']
-    resultado = ModelProveedor.create(db, rif, razon_social, telefono, email)
+    from ..models.entities.Proveedor import Proveedor
+    proveedor = Proveedor(None, rif, razon_social, telefono, email)
+    resultado = ModelProveedor.create(db, proveedor)
     if resultado == 'duplicado':
         flash('Error: El RIF ya existe en la base de datos.', 'danger')
     elif resultado == 'error':
@@ -41,7 +43,9 @@ def actualizar_proveedor():
     razon_social = request.form['razon_social']
     telefono = request.form['telefono']
     email = request.form['email']
-    resultado = ModelProveedor.update(db, id, rif, razon_social, telefono, email)
+    from ..models.entities.Proveedor import Proveedor
+    proveedor = Proveedor(id, rif, razon_social, telefono, email)
+    resultado = ModelProveedor.update(db, proveedor)
     if resultado == 'duplicado':
         flash('Error: El RIF ya existe en la base de datos.', 'danger')
     elif resultado == 'error':

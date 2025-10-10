@@ -29,7 +29,9 @@ def crear_cliente():
     razon_social = request.form['razon_social']
     telefono = request.form['telefono']
     email = request.form['email']
-    resultado = ModelCliente.create(db, documento, tipo_documento, razon_social, telefono, email)
+    from ..models.entities.Cliente import Cliente
+    cliente = Cliente(None, documento, tipo_documento, razon_social, telefono, email)
+    resultado = ModelCliente.create(db, cliente)
     if resultado == 'duplicado':
         flash('Error: El documento ya existe en la base de datos.', 'danger')
     elif resultado == 'error':

@@ -22,11 +22,17 @@ class ModelCliente():
             raise Exception(ex)
 
     @classmethod
-    def create(self, db, documento, tipo_documento, razon_social, telefono, email):
+    def create(self, db, cliente: Cliente):
         try:
             cursor = db.connection.cursor()
             sql = "INSERT INTO clientes (documento, tipo_documento, razon_social, telefono, email) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (documento, tipo_documento, razon_social, telefono, email))
+            cursor.execute(sql, (
+                cliente.get_documento(),
+                cliente.get_tipo_documento(),
+                cliente.get_razon_social(),
+                cliente.get_telefono(),
+                cliente.get_email()
+            ))
             db.connection.commit()
             print("Cliente creado correctamente")
         except Exception as ex:
@@ -37,11 +43,18 @@ class ModelCliente():
             return 'error'
 
     @classmethod
-    def update(self, db, id, documento, tipo_documento, razon_social, telefono, email):
+    def update(self, db, cliente: Cliente):
         try:
             cursor = db.connection.cursor()
             sql = "UPDATE clientes SET documento=%s, tipo_documento=%s, razon_social=%s, telefono=%s, email=%s WHERE id=%s"
-            cursor.execute(sql, (documento, tipo_documento, razon_social, telefono, email, id))
+            cursor.execute(sql, (
+                cliente.get_documento(),
+                cliente.get_tipo_documento(),
+                cliente.get_razon_social(),
+                cliente.get_telefono(),
+                cliente.get_email(),
+                cliente.get_id()
+            ))
             db.connection.commit()
             print("Cliente actualizado correctamente")
             return 'ok'

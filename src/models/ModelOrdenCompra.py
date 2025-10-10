@@ -24,6 +24,13 @@ class ModelOrdenCompra:
                     """,
                     (det['cantidad'], det['precio_unitario'], orden_id, det['producto_codigo'])
                 )
+                # Sumar la cantidad al stock del producto
+                cursor.execute(
+                    """
+                    UPDATE productos SET stock = stock + %s WHERE id = %s
+                    """,
+                    (det['cantidad'], det['producto_codigo'])
+                )
             db.connection.commit()
             return orden_id
         except Exception as e:

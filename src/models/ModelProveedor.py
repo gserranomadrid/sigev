@@ -13,11 +13,16 @@ class ModelProveedor():
             return []
 
     @classmethod
-    def create(self, db, rif, razon_social, telefono, email):
+    def create(self, db, proveedor: Proveedor):
         try:
             cursor = db.connection.cursor()
             sql = "INSERT INTO proveedores (rif, razon_social, telefono, email) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (rif, razon_social, telefono, email))
+            cursor.execute(sql, (
+                proveedor.get_rif(),
+                proveedor.get_razon_social(),
+                proveedor.get_telefono(),
+                proveedor.get_email()
+            ))
             db.connection.commit()
             print("Proveedor creado correctamente")
         except Exception as ex:
@@ -28,11 +33,17 @@ class ModelProveedor():
             return 'error'
 
     @classmethod
-    def update(self, db, id, rif, razon_social, telefono, email):
+    def update(self, db, proveedor: Proveedor):
         try:
             cursor = db.connection.cursor()
             sql = "UPDATE proveedores SET rif=%s, razon_social=%s, telefono=%s, email=%s WHERE id=%s"
-            cursor.execute(sql, (rif, razon_social, telefono, email, id))
+            cursor.execute(sql, (
+                proveedor.get_rif(),
+                proveedor.get_razon_social(),
+                proveedor.get_telefono(),
+                proveedor.get_email(),
+                proveedor.get_id()
+            ))
             db.connection.commit()
             print("Proveedor actualizado correctamente")
             return 'ok'

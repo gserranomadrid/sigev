@@ -24,7 +24,9 @@ def crear_producto():
     descripcion = request.form['descripcion']
     precio = request.form['precio']
     stock = request.form['stock']
-    resultado = ModelProducto.create(db, codigo, nombre, descripcion, precio, stock)
+    from ..models.entities.Producto import Producto
+    producto = Producto(None, codigo, nombre, descripcion, precio, stock)
+    resultado = ModelProducto.create(db, producto)
     if resultado == 'duplicado':
         flash('Error: El código ya existe en la base de datos.', 'danger')
     elif resultado == 'error':
@@ -43,7 +45,9 @@ def actualizar_producto():
     descripcion = request.form['descripcion']
     precio = request.form['precio']
     stock = request.form['stock']
-    resultado = ModelProducto.update(db, id, codigo, nombre, descripcion, precio, stock)
+    from ..models.entities.Producto import Producto
+    producto = Producto(id, codigo, nombre, descripcion, precio, stock)
+    resultado = ModelProducto.update(db, producto)
     if resultado == 'duplicado':
         flash('Error: El código ya existe en la base de datos.', 'danger')
     elif resultado == 'error':

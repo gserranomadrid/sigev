@@ -13,11 +13,17 @@ class ModelProducto():
             return []
 
     @classmethod
-    def create(self, db, codigo, nombre, descripcion, precio, stock):
+    def create(self, db, producto: Producto):
         try:
             cursor = db.connection.cursor()
             sql = "INSERT INTO productos (codigo, nombre, descripcion, precio, stock) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (codigo, nombre, descripcion, precio, stock))
+            cursor.execute(sql, (
+                producto.get_codigo(),
+                producto.get_nombre(),
+                producto.get_descripcion(),
+                producto.get_precio(),
+                producto.get_stock()
+            ))
             db.connection.commit()
             print("Producto creado correctamente")
         except Exception as ex:
@@ -28,11 +34,18 @@ class ModelProducto():
             return 'error'
 
     @classmethod
-    def update(self, db, id, codigo, nombre, descripcion, precio, stock):
+    def update(self, db, producto: Producto):
         try:
             cursor = db.connection.cursor()
             sql = "UPDATE productos SET codigo=%s, nombre=%s, descripcion=%s, precio=%s, stock=%s WHERE id=%s"
-            cursor.execute(sql, (codigo, nombre, descripcion, precio, stock, id))
+            cursor.execute(sql, (
+                producto.get_codigo(),
+                producto.get_nombre(),
+                producto.get_descripcion(),
+                producto.get_precio(),
+                producto.get_stock(),
+                producto.get_id()
+            ))
             db.connection.commit()
             print("Producto actualizado correctamente")
             return 'ok'
