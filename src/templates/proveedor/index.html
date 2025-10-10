@@ -30,26 +30,26 @@
                 <tbody>
                     {% for proveedor in proveedores %}
                     <tr>
-                        <td>{{ proveedor.rif }}</td>
-                        <td>{{ proveedor.razon_social }}</td>
-                        <td>{{ proveedor.telefono }}</td>
-                        <td>{{ proveedor.email }}</td>
+                        <td>{{ proveedor.get_rif() }}</td>
+                        <td>{{ proveedor.get_razon_social() }}</td>
+                        <td>{{ proveedor.get_telefono() }}</td>
+                        <td>{{ proveedor.get_email() }}</td>
                         <td>
-                            <span class="badge {% if proveedor.activo == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if proveedor.activo == 1 else 'Inactivo' }}</span>
+                            <span class="badge {% if proveedor.get_activo() == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if proveedor.get_activo() == 1 else 'Inactivo' }}</span>
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary btn-editar-proveedor"
-                                data-id="{{ proveedor.id }}"
-                                data-rif="{{ proveedor.rif }}"
-                                data-razon_social="{{ proveedor.razon_social }}"
-                                data-telefono="{{ proveedor.telefono }}"
-                                data-email="{{ proveedor.email }}"
+                                data-id="{{ proveedor.get_id() }}"
+                                data-rif="{{ proveedor.get_rif() }}"
+                                data-razon_social="{{ proveedor.get_razon_social() }}"
+                                data-telefono="{{ proveedor.get_telefono() }}"
+                                data-email="{{ proveedor.get_email() }}"
                                 data-toggle="modal" data-target="#modalProveedor">
                                 Editar
                             </button>
-                            <form method="POST" action="{{ url_for('proveedores.inactivar_proveedor', id=proveedor.id) }}" class="d-inline" id="formInactivarProveedor{{ proveedor.id }}">
+                            <form method="POST" action="{{ url_for('proveedores.inactivar_proveedor', id=proveedor.get_id()) }}" class="d-inline" id="formInactivarProveedor{{ proveedor.get_id() }}">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-proveedor" data-id="{{ proveedor.id }}">Inactivar</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-proveedor" data-id="{{ proveedor.get_id() }}">Inactivar</button>
                             </form>
                         </td>
                     </tr>

@@ -1,4 +1,4 @@
-from ..entities.OrdenCompra import OrdenCompra, DetalleCompra
+from .entities.OrdenCompra import OrdenCompra, DetalleCompra
 from ..db import db
 
 class ModelOrdenCompra:

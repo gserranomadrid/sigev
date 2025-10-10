@@ -36,7 +36,7 @@ def login():
     if request.method == 'POST':
         user = Usuario(0, request.form['username'], request.form['password'], '')
         logged_user = ModelUsuario.login(db, user)
-        if logged_user and logged_user.password:
+        if logged_user and logged_user.get_password():
             login_user(logged_user)
             return render_template('/home.html', user=logged_user)
         else:

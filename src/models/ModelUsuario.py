@@ -14,16 +14,19 @@ class ModelUsuario():
                 return None
             # Consulta original
             sql = "SELECT * FROM usuarios WHERE username = %s"
-            values = (usuario.username,)
+            values = (usuario.get_username(),)
             cursor.execute(sql, values)
             row = cursor.fetchone()
             if row != None:
-                usuario_db = Usuario(row[0], row[1], Usuario.check_password(row[2], usuario.password), row[3])
-                if usuario_db:
+                password_valido = Usuario.check_password(row[2], usuario.get_password())
+                if password_valido:
+                    usuario_db = Usuario(row[0], row[1], row[2], row[3])
                     return usuario_db
                 else:
+                    print("Contraseña incorrecta")
                     return None
             else:
+                print("Usuario no encontrado")
                 return None
         except Exception as ex:
             print(f"Error en login: {ex}")

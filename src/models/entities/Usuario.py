@@ -8,6 +8,18 @@ class Usuario(UserMixin):
         self.__password = password
         self.__nombre = nombre
 
+    def get_id(self):
+        return self.__id
+
+    def get_username(self):
+        return self.__username
+
+    def get_password(self):
+        return self.__password
+
+    def get_nombre(self):
+        return self.__nombre
+
     @classmethod 
     def check_password(self, hashed_password, password):
         return check_password_hash(hashed_password, password)

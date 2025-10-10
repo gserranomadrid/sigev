@@ -43,31 +43,31 @@
                     {% for cliente in clientes %}
                     <tr>
                         <td>
-                            {{ cliente.tipo_documento }} {{ cliente.documento }}
+                            {{ cliente.get_tipo_documento() }} {{ cliente.get_documento() }}
                         </td>
                         <td>
-                            {{ cliente.razon_social }}
+                            {{ cliente.get_razon_social() }}
                         </td>
                         <td>
-                            {{ cliente.email }}
+                            {{ cliente.get_email() }}
                         </td>
                         <td>
-                            <span class="badge {% if cliente.activo == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if cliente.activo == 1 else 'Inactivo' }}</span>
+                            <span class="badge {% if cliente.get_activo() == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if cliente.get_activo() == 1 else 'Inactivo' }}</span>
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary btn-editar-cliente"
-                                data-id="{{ cliente.id }}"
-                                data-documento="{{ cliente.documento }}"
-                                data-tipo_documento="{{ cliente.tipo_documento }}"
-                                data-razon_social="{{ cliente.razon_social }}"
-                                data-telefono="{{ cliente.telefono }}"
-                                data-email="{{ cliente.email }}"
+                                data-id="{{ cliente.get_id() }}"
+                                data-documento="{{ cliente.get_documento() }}"
+                                data-tipo_documento="{{ cliente.get_tipo_documento() }}"
+                                data-razon_social="{{ cliente.get_razon_social() }}"
+                                data-telefono="{{ cliente.get_telefono() }}"
+                                data-email="{{ cliente.get_email() }}"
                                 data-toggle="modal" data-target="#modalCliente">
                                 Editar
                             </button>
-                            <form method="POST" action="{{ url_for('clientes.inactivar_cliente', id=cliente.id) }}" class="d-inline" id="formInactivar{{ cliente.id }}">
+                            <form method="POST" action="{{ url_for('clientes.inactivar_cliente', id=cliente.get_id()) }}" class="d-inline" id="formInactivar{{ cliente.get_id() }}">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-cliente" data-id="{{ cliente.id }}">Inactivar</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-cliente" data-id="{{ cliente.get_id() }}">Inactivar</button>
                             </form>
                         </td>
                     </tr>

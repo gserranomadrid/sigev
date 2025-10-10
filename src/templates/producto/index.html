@@ -31,28 +31,28 @@
                 <tbody>
                     {% for producto in productos %}
                     <tr>
-                        <td>{{ producto.codigo }}</td>
-                        <td>{{ producto.nombre }}</td>
-                        <td>{{ producto.descripcion }}</td>
-                        <td>{{ producto.precio }}</td>
-                        <td>{{ producto.stock }}</td>
+                        <td>{{ producto.get_codigo() }}</td>
+                        <td>{{ producto.get_nombre() }}</td>
+                        <td>{{ producto.get_descripcion() }}</td>
+                        <td>{{ producto.get_precio() }}</td>
+                        <td>{{ producto.get_stock() }}</td>
                         <td>
-                            <span class="badge {% if producto.activo == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if producto.activo == 1 else 'Inactivo' }}</span>
+                            <span class="badge {% if producto.get_activo() == 1 %}bg-success{% else %}bg-danger{% endif %}">{{ 'Activo' if producto.get_activo() == 1 else 'Inactivo' }}</span>
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary btn-editar-producto"
-                                data-id="{{ producto.id }}"
-                                data-codigo="{{ producto.codigo }}"
-                                data-nombre="{{ producto.nombre }}"
-                                data-descripcion="{{ producto.descripcion }}"
-                                data-precio="{{ producto.precio }}"
-                                data-stock="{{ producto.stock }}"
+                                data-id="{{ producto.get_id() }}"
+                                data-codigo="{{ producto.get_codigo() }}"
+                                data-nombre="{{ producto.get_nombre() }}"
+                                data-descripcion="{{ producto.get_descripcion() }}"
+                                data-precio="{{ producto.get_precio() }}"
+                                data-stock="{{ producto.get_stock() }}"
                                 data-toggle="modal" data-target="#modalProducto">
                                 Editar
                             </button>
-                            <form method="POST" action="{{ url_for('productos.inactivar_producto', id=producto.id) }}" class="d-inline" id="formInactivarProducto{{ producto.id }}">
+                            <form method="POST" action="{{ url_for('productos.inactivar_producto', id=producto.get_id()) }}" class="d-inline" id="formInactivarProducto{{ producto.get_id() }}">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-producto" data-id="{{ producto.id }}">Inactivar</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-inactivar-producto" data-id="{{ producto.get_id() }}">Inactivar</button>
                             </form>
                         </td>
                     </tr>
