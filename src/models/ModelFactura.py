@@ -51,6 +51,8 @@ class ModelFactura:
     def create(cls, db, factura: Factura):
         try:
             cursor = db.connection.cursor()
+            # Iniciar transacción
+            db.connection.begin()
             sql = "INSERT INTO facturas (cliente_id, fecha, total) VALUES (%s, %s, %s)"
             cursor.execute(sql, (
                 factura.get_cliente_id(),
@@ -59,6 +61,21 @@ class ModelFactura:
             ))
             factura_id = cursor.lastrowid
             for det in factura.get_detalles():
+                # Validar stock
+                cursor.execute("SELECT stock FROM productos WHERE id = %s", (det.get_producto_id(),))
+                row = cursor.fetchone()
+                if not row:
+                    db.connection.rollback()
+                    print(f"Producto no encontrado: {det.get_producto_id()}")
+                    raise Exception(f"Producto no encontrado: {det.get_producto_id()}")
+                stock_actual = row[0]
+                if det.get_cantidad() > stock_actual:
+                    db.connection.rollback()
+                    print(f"Stock insuficiente para producto {det.get_producto_id()} (stock: {stock_actual}, solicitado: {det.get_cantidad()})")
+                    raise Exception(f"Stock insuficiente para producto {det.get_producto_id()} (stock: {stock_actual}, solicitado: {det.get_cantidad()})")
+                # Descontar stock
+                cursor.execute("UPDATE productos SET stock = stock - %s WHERE id = %s", (det.get_cantidad(), det.get_producto_id()))
+                # Insertar detalle
                 cursor.execute(
                     """
                     INSERT INTO detalle_facturas (factura_id, producto_id, cantidad, precio_unitario)
