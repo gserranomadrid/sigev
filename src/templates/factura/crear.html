@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}Crear Factura{% endblock %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Crear Factura</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST" id="facturaForm">
+            {{ form.hidden_tag() }}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.cliente_id.label }}
+                    {{ form.cliente_id(class="form-control select2 w-100", data_control="select2") }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.fecha.label }}
+                    {{ form.fecha(class="form-control w-100") }}
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form.total.label }}
+                    {{ form.total(class="form-control w-100", readonly=true) }}
+                </div>
+            </div>
+            <div class="row mb-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="producto_id">Producto</label>
+                    <select id="producto_id" class="form-select select2 w-100" name="producto_id">
+                        <option value="">Seleccione</option>
+                        {% for prod in form.detalles[0].producto_id.choices %}
+                        <option value="{{ prod[0] }}">{{ prod[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" min="1" id="cantidad" class="form-control" value="1">
+                </div>
+                <div class="col-md-3">
+                    <label for="precio_unitario">Precio Unitario</label>
+                    <input type="text" id="precio_unitario" class="form-control" readonly>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-secondary" id="agregarItem">Agregar</button>
+                </div>
+            </div>
+            <table class="table table-bordered align-middle mt-4" id="tabla-items" width="100%">
+                <thead class="table-light border border-secondary">
+                    <tr>
+                        <th style="width:40%">Producto</th>
+                        <th style="width:20%">Cantidad</th>
+                        <th style="width:20%">Precio Unitario</th>
+                        <th style="width:20%">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Guardar Factura</button>
+            <a href="{{ url_for('facturas.listar_facturas') }}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+<script>
+    // Inicializa Select2 en el select de producto
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.$ && typeof window.$.fn.select2 === 'function') {
+            $('#producto_id').select2({theme: 'bootstrap-5', placeholder: 'Seleccione'});
+            // Registrar el listener select2:select después de inicializar
+            $('#producto_id').on('select2:select', actualizarPrecioProductoSelect2);
+        }
+        // También registrar el listener change
+        document.getElementById('producto_id').addEventListener('change', actualizarPrecioProductoSelect2);
+    });
+
+    // Traer el precio al seleccionar producto
+    async function obtenerPrecioProducto(productoId) {
+        try {
+            const response = await fetch(`/facturas/precio_producto/${productoId}`);
+            if (!response.ok) return null;
+            const data = await response.json();
+            return data.precio;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function actualizarPrecioProductoSelect2() {
+        let productoId = document.getElementById('producto_id').value;
+        let precioInput = document.getElementById('precio_unitario');
+        if (!productoId) {
+            precioInput.value = '';
+            return;
+        }
+        obtenerPrecioProducto(productoId).then(precio => {
+            if (precio !== null) {
+                let precioNum = parseFloat(precio);
+                precioInput.value = isNaN(precioNum) ? '' : precioNum.toFixed(2);
+            } else {
+                precioInput.value = '';
+            }
+        });
+    }
+    document.getElementById('producto_id').addEventListener('change', actualizarPrecioProductoSelect2);
+    if (window.$ && typeof window.$.fn.select2 === 'function') {
+        $('#producto_id').on('select2:select', actualizarPrecioProductoSelect2);
+    }
+
+    document.getElementById('agregarItem').onclick = function() {
+        let productoSelect = document.getElementById('producto_id');
+        let productoId = productoSelect.value;
+        let productoText = productoSelect.options[productoSelect.selectedIndex].text;
+        let cantidad = document.getElementById('cantidad').value;
+        let precio = document.getElementById('precio_unitario').value;
+        if (!productoId || productoId === '' || !cantidad || cantidad === '' || !precio) {
+            alert('Selecciona producto, cantidad y espera el precio.');
+            return;
+        }
+        let tbody = document.querySelector('#tabla-items tbody');
+        let tr = document.createElement('tr');
+    tr.innerHTML = `<td><input type="hidden" name="producto_id[]" value="${productoId}">${productoText}</td>
+        <td><input type="hidden" name="cantidad[]" value="${cantidad}">${cantidad}</td>
+        <td><input type="hidden" name="precio_unitario[]" value="${precio}">${precio}</td>
+        <td class="text-center"><button type="button" class="btn btn-danger btn-sm eliminar-item">Eliminar</button></td>`;
+        tbody.appendChild(tr);
+        // Limpiar campos
+        productoSelect.selectedIndex = 0;
+        $('#producto_id').trigger('change');
+        document.getElementById('cantidad').value = 1;
+        document.getElementById('precio_unitario').value = '';
+        actualizarTotalFactura();
+    };
+
+    document.getElementById('tabla-items').addEventListener('click', function(e) {
+        if (e.target.classList.contains('eliminar-item')) {
+            e.target.closest('tr').remove();
+            actualizarTotalFactura();
+        }
+    });
+
+    function actualizarTotalFactura() {
+        let total = 0;
+        document.querySelectorAll('#tabla-items tbody tr').forEach(function(row) {
+            let cantidad = parseFloat(row.querySelector('input[name="cantidad[]"]').value) || 0;
+            let precio = parseFloat(row.querySelector('input[name="precio_unitario[]"]').value) || 0;
+            total += cantidad * precio;
+        });
+        document.querySelector('input[name="total"]').value = total.toFixed(2);
+    }
+</script>
+{% endblock %}

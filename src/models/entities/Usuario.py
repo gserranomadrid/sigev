@@ -2,6 +2,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 class Usuario(UserMixin):
+    @property
+    def nombre(self):
+        return self.__nombre
     def __init__(self, id, username, password, nombre=''):
         self.__id = id
         self.__username = username

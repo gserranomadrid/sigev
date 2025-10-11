@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Detalle de Factura{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header">
+            <h4>Factura #{{ factura.id }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <strong>Cliente:</strong> {{ factura.cliente_nombre }}<br>
+                    <strong>Fecha:</strong> {{ factura.fecha }}
+                </div>
+                <div class="col-md-6 text-right">
+                    <strong>Total:</strong> ${{ factura.total }}
+                </div>
+            </div>
+            <hr>
+            <h5>Detalle de productos</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for det in factura.detalles %}
+                    <tr>
+                        <td>{{ det.producto_nombre }}</td>
+                        <td>{{ det.cantidad }}</td>
+                        <td>${{ det.precio_unitario }}</td>
+                        <td>${{ det.cantidad * det.precio_unitario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-right">
+            <button class="btn btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+            <a href="{{ url_for('facturas.listar_facturas') }}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

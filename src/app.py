@@ -8,6 +8,7 @@ from .routes.clientes import clientes_bp
 from .routes.proveedores import proveedores_bp
 from .routes.productos import productos_bp
 from .routes.ordenes_compra import ordenes_compra_bp
+from .routes.facturas import facturas_bp
 
 #Modelos
 from .models.ModelUsuario import ModelUsuario
@@ -69,6 +70,7 @@ if __name__ == '__main__':
     app.register_blueprint(proveedores_bp)
     app.register_blueprint(productos_bp)
     app.register_blueprint(ordenes_compra_bp)
+    app.register_blueprint(facturas_bp)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
     app.run(debug=True)
