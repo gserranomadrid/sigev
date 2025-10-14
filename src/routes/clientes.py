@@ -50,7 +50,9 @@ def actualizar_cliente():
     razon_social = request.form['razon_social']
     telefono = request.form['telefono']
     email = request.form['email']
-    resultado = ModelCliente.update(db, id, documento, tipo_documento, razon_social, telefono, email)
+    from ..models.entities.Cliente import Cliente
+    cliente = Cliente(id, documento, tipo_documento, razon_social, telefono, email)
+    resultado = ModelCliente.update(db, cliente)
     if resultado == 'duplicado':
         flash('Error: El documento ya existe en la base de datos.', 'danger')
     elif resultado == 'error':

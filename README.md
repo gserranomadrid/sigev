@@ -34,6 +34,7 @@ python -m venv venv
 Luego, activa el entorno
 
 ```bash
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 .\venv\Scripts\Activate.ps1
 ```
 
