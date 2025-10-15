@@ -13,7 +13,9 @@
                     <strong>Fecha:</strong> {{ factura.fecha }}
                 </div>
                 <div class="col-md-6 text-right">
-                    <strong>Total:</strong> ${{ factura.total }}
+                    <strong>Subtotal:</strong> {{ factura.total }}<br>
+                    <strong>IVA (16%):</strong> {{ factura.iva }}<br>
+                    <strong>Total con IVA:</strong> {{ '%.2f' % (factura.total|float +factura.iva|float) }}
                 </div>
             </div>
             <hr>
@@ -32,8 +34,8 @@
                     <tr>
                         <td>{{ det.producto_nombre }}</td>
                         <td>{{ det.cantidad }}</td>
-                        <td>${{ det.precio_unitario }}</td>
-                        <td>${{ det.cantidad * det.precio_unitario }}</td>
+                        <td>{{ det.precio_unitario }}</td>
+                        <td>{{ det.cantidad * det.precio_unitario }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

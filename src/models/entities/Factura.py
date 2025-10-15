@@ -1,14 +1,18 @@
 from datetime import datetime
 
 class Factura:
-    def __init__(self, id=None, cliente_id=None, fecha=None, total=0.0, estado='pendiente', detalles=None):
+    def __init__(self, id=None, cliente_id=None, fecha=None, total=0.0, estado='pendiente', detalles=None, iva=0.0):
         self.__id = id
         self.__cliente_id = cliente_id
         self.__fecha = fecha or datetime.utcnow()
         self.__total = total
         self.__estado = estado
         self.__detalles = detalles or []
-
+        self.__iva = iva
+    def get_iva(self):
+        return self.__iva
+    def set_iva(self, iva):
+        self.__iva = iva
     def get_id(self):
         return self.__id
     def get_cliente_id(self):

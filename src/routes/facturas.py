@@ -4,7 +4,7 @@ from flask_login import login_required
 from ..models.ModelFactura import ModelFactura
 from ..models.entities.Factura import Factura, DetalleFactura
 from ..forms.factura_form import FacturaForm
-
+from datetime import date
 facturas_bp = Blueprint('facturas', __name__, url_prefix='/facturas')
 
 @facturas_bp.route('/', methods=['GET'])
@@ -25,6 +25,8 @@ def crear_factura():
     clientes = ModelCliente.get_all(db)
     productos = ModelProducto.get_all(db)
     form = FacturaForm()
+    hoy = date.today()
+    form.fecha.data = hoy
     # Cargar opciones en los selects
     form.cliente_id.choices = [(c.get_id(), c.get_razon_social()) for c in clientes]
     for detalle_form in form.detalles:
@@ -32,8 +34,9 @@ def crear_factura():
     if request.method == 'POST':
         try:
             cliente_id = request.form['cliente_id']
-            fecha = request.form.get('fecha')
+            fecha = request.form['fecha']
             total = request.form['total']
+            iva = request.form.get('iva', None)
             detalles = []
             stock_error = False
             producto_ids = request.form.getlist('producto_id[]')
@@ -46,7 +49,7 @@ def crear_factura():
             ]
             if not items:
                 flash('Debes agregar al menos un producto válido.', 'danger')
-                return render_template('factura/crear.html', form=form, productos=productos)
+                return render_template('factura/crear.html', form=form, productos=productos, fecha=hoy)
             for pid, cant, prec in items:
                 producto_id = int(pid)
                 cantidad = int(cant)
@@ -58,7 +61,7 @@ def crear_factura():
                 detalles.append(DetalleFactura(None, None, producto_id, cantidad, precio_unitario))
             if stock_error:
                 return render_template('factura/crear.html', form=form, productos=productos)
-            factura = Factura(None, cliente_id, fecha, float(total), None, detalles)
+            factura = Factura(None, cliente_id, fecha, float(total), None, detalles, float(iva) if iva else 0.0)
             factura_id = ModelFactura.create(db, factura)
             if factura_id:
                 flash('Factura creada correctamente.', 'success')
@@ -71,7 +74,7 @@ def crear_factura():
             traceback.print_exc()
             flash(f'Error al crear la factura: {e}', 'danger')
             return render_template('factura/crear.html', form=form, productos=productos)
-    return render_template('factura/crear.html', form=form, productos=productos)
+    return render_template('factura/crear.html', form=form, productos=productos, fecha=hoy)
 
 @facturas_bp.route('/precio_producto/<int:producto_id>', methods=['GET'])
 @login_required
@@ -91,6 +94,6 @@ def ver_factura(factura_id):
     from ..db import db
     factura = ModelFactura.get_by_id(db, factura_id)
     if not factura:
-        flash('Factura no encontrada.', 'danger')
+        flash('Factura no encontrada: ' + str(factura), 'danger')
         return redirect(url_for('facturas.listar_facturas'))
     return render_template('factura/detalle.html', factura=factura)

@@ -8,7 +8,7 @@ class ModelFactura:
             cursor = db.connection.cursor()
             cursor.execute(
                 '''
-                SELECT f.id, f.cliente_id, f.fecha, f.total, f.estado, c.razon_social
+                SELECT f.id, f.cliente_id, f.fecha, f.total, f.estado, f.iva, f.total_iva, c.razon_social
                 FROM facturas f
                 JOIN clientes c ON f.cliente_id = c.id
                 WHERE f.id = %s
@@ -32,7 +32,9 @@ class ModelFactura:
                 'fecha': f[2],
                 'total': f[3],
                 'estado': f[4],
-                'cliente_nombre': f[5],
+                'iva': f[5],
+                'total_iva': f[6],
+                'cliente_nombre': f[7],
                 'detalles': [
                     {
                         'id': d[0],
@@ -53,11 +55,13 @@ class ModelFactura:
             cursor = db.connection.cursor()
             # Iniciar transacción
             db.connection.begin()
-            sql = "INSERT INTO facturas (cliente_id, fecha, total) VALUES (%s, %s, %s)"
+            sql = "INSERT INTO facturas (cliente_id, fecha, total, iva, total_iva) VALUES (%s, %s, %s, %s, %s)"
             cursor.execute(sql, (
                 factura.get_cliente_id(),
                 factura.get_fecha(),
-                factura.get_total()
+                factura.get_total(),
+                factura.get_iva(),
+                factura.get_total+factura.get_iva(),
             ))
             factura_id = cursor.lastrowid
             for det in factura.get_detalles():
