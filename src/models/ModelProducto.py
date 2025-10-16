@@ -60,11 +60,18 @@ class ModelProducto():
     def inactivate(self, db, id):
         try:
             cursor = db.connection.cursor()
-            sql = "UPDATE productos SET activo=0 WHERE id=%s"
-            cursor.execute(sql, (id,))
+            cursor.execute("SELECT activo FROM productos WHERE id=%s", (id,))
+            row = cursor.fetchone()
+            if not row:
+                print("Producto no encontrado")
+                return 'error'
+            estado_actual = row[0]
+            nuevo_estado = 1 if estado_actual == 0 else 0
+            sql = "UPDATE productos SET activo=%s WHERE id=%s"
+            cursor.execute(sql, (nuevo_estado, id))
             db.connection.commit()
-            print("Producto inactivado correctamente")
+            print(f"Producto {'activado' if nuevo_estado == 1 else 'inactivado'} correctamente")
             return 'ok'
         except Exception as ex:
-            print(f"Error al inactivar producto: {ex}")
+            print(f"Error al alternar estado de producto: {ex}")
             return 'error'

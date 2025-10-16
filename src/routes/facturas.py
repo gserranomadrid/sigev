@@ -22,8 +22,8 @@ def crear_factura():
     from ..db import db
     from ..models.ModelCliente import ModelCliente
     from ..models.ModelProducto import ModelProducto
-    clientes = ModelCliente.get_all(db)
-    productos = ModelProducto.get_all(db)
+    clientes = [c for c in ModelCliente.get_all(db) if hasattr(c, 'get_activo') and c.get_activo() == 1]
+    productos = [p for p in ModelProducto.get_all(db) if hasattr(p, 'get_activo') and p.get_activo() == 1]
     form = FacturaForm()
     hoy = date.today()
     form.fecha.data = hoy

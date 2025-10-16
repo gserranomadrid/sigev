@@ -12,7 +12,7 @@ class ModelCliente():
                 print(f"Error de conexión a la base de datos: {ex}")
                 return []
             # Consulta original
-            sql = "SELECT id, documento, tipo_documento, razon_social, telefono, email FROM clientes"
+            sql = "SELECT id, documento, tipo_documento, razon_social, telefono, email, activo FROM clientes"
             cursor.execute(sql)
             rows = cursor.fetchall()
             return [Cliente(*row) for row in rows]
@@ -68,11 +68,18 @@ class ModelCliente():
     def inactivate(self, db, id):
         try:
             cursor = db.connection.cursor()
-            sql = "UPDATE clientes SET activo=0 WHERE id=%s"
-            cursor.execute(sql, (id,))
+            cursor.execute("SELECT activo FROM clientes WHERE id=%s", (id,))
+            row = cursor.fetchone()
+            if not row:
+                print("Cliente no encontrado")
+                return 'error'
+            estado_actual = row[0]
+            nuevo_estado = 1 if estado_actual == 0 else 0
+            sql = "UPDATE clientes SET activo=%s WHERE id=%s"
+            cursor.execute(sql, (nuevo_estado, id))
             db.connection.commit()
-            print("Cliente inactivado correctamente")
+            print(f"Cliente {'activado' if nuevo_estado == 1 else 'inactivado'} correctamente")
             return 'ok'
         except Exception as ex:
-            print(f"Error al inactivar cliente: {ex}")
+            print(f"Error al alternar estado de cliente: {ex}")
             return 'error'

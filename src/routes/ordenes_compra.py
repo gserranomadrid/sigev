@@ -13,9 +13,9 @@ def index():
     form = OrdenCompraForm()
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
     cursor = db.connection.cursor()
-    cursor.execute('SELECT id, razon_social FROM proveedores')
+    cursor.execute('SELECT id, razon_social FROM proveedores where activo=1')
     proveedores = cursor.fetchall()
-    cursor.execute('SELECT id, nombre FROM productos')
+    cursor.execute('SELECT id, nombre FROM productos where activo=1')
     productos = cursor.fetchall()
     form.proveedor_rif.choices = [(str(p[0]), p[1]) for p in proveedores]
     for detalle_form in form.detalles:

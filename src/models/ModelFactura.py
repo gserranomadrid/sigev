@@ -93,7 +93,6 @@ class ModelFactura:
             db.connection.rollback()
             print(f"Error al crear factura: {ex}")
             raise
-
     @classmethod
     def get_all(cls, db):
         try:

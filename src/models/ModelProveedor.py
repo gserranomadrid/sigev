@@ -58,11 +58,19 @@ class ModelProveedor():
     def inactivate(self, db, id):
         try:
             cursor = db.connection.cursor()
-            sql = "UPDATE proveedores SET activo=0 WHERE id=%s"
-            cursor.execute(sql, (id,))
+            # Consultar el estado actual
+            cursor.execute("SELECT activo FROM proveedores WHERE id=%s", (id,))
+            row = cursor.fetchone()
+            if not row:
+                print("Proveedor no encontrado")
+                return 'error'
+            estado_actual = row[0]
+            nuevo_estado = 1 if estado_actual == 0 else 0
+            sql = "UPDATE proveedores SET activo=%s WHERE id=%s"
+            cursor.execute(sql, (nuevo_estado, id))
             db.connection.commit()
-            print("Proveedor inactivado correctamente")
+            print(f"Proveedor {'activado' if nuevo_estado == 1 else 'inactivado'} correctamente")
             return 'ok'
         except Exception as ex:
-            print(f"Error al inactivar proveedor: {ex}")
+            print(f"Error al alternar estado de proveedor: {ex}")
             return 'error'
