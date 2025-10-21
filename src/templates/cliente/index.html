@@ -97,7 +97,12 @@
                     </div>
                     <div class="form-group">
                         <label for="tipo_documento">Tipo de Documento</label>
-                        <input type="text" class="form-control" name="tipo_documento" id="tipo_documento" required>
+                        <select class="form-control" name="tipo_documento" id="tipo_documento" required>
+                            <option value="">Seleccione...</option>
+                            <option value="V" {% if form.tipo_documento.data == 'V' %}selected{% endif %}>V</option>
+                            <option value="E" {% if form.tipo_documento.data == 'E' %}selected{% endif %}>E</option>
+                            <option value="J" {% if form.tipo_documento.data == 'J' %}selected{% endif %}>J</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="razon_social">Razón Social</label>
@@ -173,7 +178,12 @@
                 $('#formCliente').attr('action', "{{ url_for('clientes.actualizar_cliente') }}");
                 $('#cliente_id').val($(this).data('id'));
                 $('#documento').val($(this).data('documento'));
-                $('#tipo_documento').val($(this).data('tipo_documento'));
+                // Asignar tipo_documento correctamente
+                var tipoDoc = $(this).data('tipo_documento');
+                $('#tipo_documento').val(tipoDoc);
+                // Forzar el select si el backend no lo selecciona
+                $('#tipo_documento option').removeAttr('selected');
+                $('#tipo_documento option[value="' + tipoDoc + '"]').attr('selected', 'selected');
                 $('#razon_social').val($(this).data('razon_social'));
                 $('#telefono').val($(this).data('telefono'));
                 $('#email').val($(this).data('email'));
